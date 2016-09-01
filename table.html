@@ -1,0 +1,111 @@
+<html>
+<body>
+	<style>
+	td {border: 1px solid black;width:40px;height:40px;text-align:center;}
+	td.highlight {border: 2px solid red} 
+	td.block {background-color: black;}
+	</style>
+	<a href="http://jquery.com/">jQuery</a>
+	<script src="jquery.js"></script>
+	<input type="button" value="Get Crossword" onclick="javascript:get_crossword()">
+	<div id='tablearea'></div>
+<script>
+	var tablearea = document.getElementById('tablearea'),
+    table = document.createElement('table');
+	var rows = 10;
+	var columns = 10;
+	for (var i = 1; i < rows; i++) {
+    	var tr = document.createElement('tr');
+		for (j = 1; j < columns; j++) {
+			var cell = document.createElement('td')
+			cell.setAttribute('row',i);
+			cell.setAttribute('column',j);
+    		tr.appendChild( cell );
+		}
+    	table.appendChild(tr);
+	}
+	tablearea.appendChild(table);
+	
+	function highlight(x, y) {
+		$( 'td[row='+x+'][column='+y+']').addClass('highlight');
+	}
+	
+	function clear_cell(x, y) {
+		var elem = $( 'td[row='+x+'][column='+y+']');
+		elem.removeClass('block');
+		elem.text('');
+	}
+	function toggle_block(x, y) {
+		var elem = $( 'td[row='+x+'][column='+y+']');
+		if (elem.hasClass('block')) {
+			elem.removeClass('block');
+		} else {
+			elem.addClass('block');
+		}
+	}
+	
+	function set_text(x, y, letter) {
+		$( 'td[row='+x+'][column='+y+']').text(letter);
+	}
+	
+	function get_crossword() {
+		var x = new Array(rows);
+		for (var i = 0; i < rows; i++) {
+		  x[i] = new Array(columns);
+		}
+		for (var i = 1; i < rows; i++) {
+			for (j = 1; j < columns; j++) {
+					var letter = $( 'td[row='+i+'][column='+j+']').text();
+					x[i-1][j-1] = letter;
+			}
+		}
+		for (var i = 0; i < rows; i++) {
+		  console.log(x[i].toString())
+		}
+	}
+	currX = 1;
+	currY = 1;
+	highlight(1,1);
+	
+	$(function(){
+	    $('html').keydown(function(e){
+			code = e.which;
+			$( 'td[row='+currX+'][column='+currY+']').removeClass('highlight');
+			if (code >= 65 && code <= 90) {
+				clear_cell(currX, currY);
+				set_text(currX, currY, String.fromCharCode(code));
+			}
+	        switch(e.which) {
+			case 37:
+					if (currY > 1) {
+						currY--;
+					}
+					break;
+				case 38:
+					if (currX > 1) {
+						currX--;
+					}
+					break;
+				case 39:
+				if (currY < columns) {
+					currY++
+				}
+				break;
+			case 40:
+				if (currX < columns) {
+					currX++
+				}
+				break;
+			case 32:
+				toggle_block(currX, currY);
+				break;
+			case 8:
+				clear_cell(currX, currY);
+				break;
+	        }
+			highlight(currX, currY)
+	    });
+	});
+</script>
+</body>
+</html>
